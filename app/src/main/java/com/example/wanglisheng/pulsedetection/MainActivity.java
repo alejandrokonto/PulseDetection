@@ -67,7 +67,7 @@ public class MainActivity extends Activity {
         if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {
             Uri videoUri = intent.getData();
             resultsV = (TextView)findViewById(R.id.resultsView);
-            resultsV.setText("????????");
+            resultsV.setText("Data received!");
 
         }
     }
