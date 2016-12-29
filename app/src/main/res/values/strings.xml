@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">PulseDetection</string>
+    <string name="buttonText">计算吧</string>
+    <string name="resultsTextViewText">这里就是数据显出的地方</string>
 </resources>
