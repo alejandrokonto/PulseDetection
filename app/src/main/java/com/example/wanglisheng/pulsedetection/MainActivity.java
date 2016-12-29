@@ -1,106 +1,78 @@
 package com.example.wanglisheng.pulsedetection;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.PixelFormat;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
+
+import static android.R.attr.button;
+import static android.provider.MediaStore.ACTION_VIDEO_CAPTURE;
 
 public class MainActivity extends Activity {
-    private SurfaceView cameraPreview;
-    private android.hardware.Camera camera = null;
-    private SurfaceHolder.Callback cameraPreviewHolderCallback = new SurfaceHolder.Callback() {
-        @Override
-        public void surfaceCreated(SurfaceHolder holder) {
-            startPreview();
-        }
 
-        @Override
-        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-        }
-
-        @Override
-        public void surfaceDestroyed(SurfaceHolder holder) {
-            stopPreview();
-
-        }
-    };
-
-    private String saveTempFile(byte[] bytes){
-        try {
-            //File f = File.createTempFile("img", "");
-            File directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-            File f = new File(directory, "test.jpg");
-
-            FileOutputStream fos = new FileOutputStream(f);
-            fos.write(bytes);
-            fos.flush();
-            fos.close();
-
-
-            return f.getAbsolutePath();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
-    private void startPreview(){            //预览拍完照的画面
-        camera = android.hardware.Camera.open();
-        try {
-            camera.setPreviewDisplay(cameraPreview.getHolder());
-            camera.setDisplayOrientation(90);
-            camera.startPreview();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void stopPreview(){
-        camera.stopPreview();
-        camera.release();
-    }
-
+    Button takePhotos;
+    TextView resultsV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        cameraPreview = (SurfaceView) findViewById(R.id.cameraPreview);
+        takePhotos = (Button) findViewById(R.id.btnTakePic);
 
-        cameraPreview.getHolder().addCallback(cameraPreviewHolderCallback);
-
-        findViewById(R.id.btnTakePic).setOnClickListener(new View.OnClickListener(){
+        takePhotos.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
-                camera.takePicture(null, null, new Camera.PictureCallback() {
-                    @Override
-                    public void onPictureTaken(byte[] data, Camera camera) {
-                        String path = null;
-                        if ((path=saveTempFile(data))!=null){
-
-                            Intent i = new Intent(MainActivity.this,ImagePreviewAty.class);
-                            i.putExtra("path",path);
-                            startActivity(i);
-                        }else{
-                            Toast.makeText(MainActivity.this,"保存照片失败",Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+            public void onClick(View view) {
+                dispatchTakeVideoIntent();
             }
         });
+
+
+
+
     }
+
+    static final int REQUEST_VIDEO_CAPTURE = 1;
+    private void dispatchTakeVideoIntent(){
+        Intent takeVideoIntent = new Intent(ACTION_VIDEO_CAPTURE);
+        if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
+        }
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {
+            Uri videoUri = intent.getData();
+            resultsV = (TextView)findViewById(R.id.resultsView);
+            resultsV.setText("????????");
+
+        }
+    }
+
+
 
 
 }
