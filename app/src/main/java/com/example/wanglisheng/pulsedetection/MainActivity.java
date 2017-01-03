@@ -36,6 +36,7 @@ import org.w3c.dom.Text;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Calendar;
@@ -75,10 +76,31 @@ public class MainActivity extends Activity {
                 //============= 1.把电脑上存过的视频分成照片=================================================
                 String pathToVideo = "/storage/emulated/0/DCIM/Camera/";
                 String pathToWrite = "/storage/emulated/0/DCIM/PulseDetectionApp";
+                VideoToSignalParser videoToSignalParser = new VideoToSignalParser(pathToVideo,pathToWrite);
 
-                VideoToPhotosParser videoParser = new VideoToPhotosParser(pathToVideo,pathToWrite);
-                videoParser.parse(1,2);
-                resultsV.setText("对象1,2的视频分析结束了！");
+                //创建所有数据的目录
+                File newDir = new File(pathToWrite);
+                if(!newDir.exists()){
+                    boolean success = newDir.mkdir();
+                }
+
+                //创建frameData.txt
+                File frameData = new File(pathToWrite+"/frameData.txt");
+                try {
+                    FileWriter frameDataWriter = new FileWriter(frameData,true);
+                    //计算起来每个视频的brightness矩阵,又把矩阵写在frameData.txt上
+                    for(int i = 2; i < 3; i++ ){//到现在已经做好了两个对象
+                        videoToSignalParser.parse(i,1);
+                        videoToSignalParser.writeSignalToFile(frameDataWriter,i-1);
+                        videoToSignalParser.parse(i,2);
+                        videoToSignalParser.writeSignalToFile(frameDataWriter, i-1);
+                        resultsV.setText("写完了");
+                    }
+                    frameDataWriter.close();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
 
 
@@ -86,10 +108,6 @@ public class MainActivity extends Activity {
 
 
                 /*dispatchTakeVideoIntent();  That was for using an intent to use the camera of the phone*/
-
-
-
-
             }
         });
 
