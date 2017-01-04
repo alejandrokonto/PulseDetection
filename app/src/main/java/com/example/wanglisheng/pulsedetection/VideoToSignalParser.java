@@ -39,7 +39,8 @@ public class VideoToSignalParser {
         brightness = new float[450];
 
         //采集过的心跳数据
-        heartBeatRate = new int[]{76, 101, 71, 90, 76, 80, 103};
+        heartBeatRate = new int[]{76,101,71,90,76,80,103,73,78,73,90,71,95,53,63,63,94,83,91,78,59,89,85,67,66,61,68,71,92,76,91,
+                                    71,61,74,69,67,107,67,79,87,71,106,85,65,76,90,99,78,71,62,76};
     }
 
     public void parse(int index, int subIndex){

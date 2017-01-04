@@ -89,7 +89,7 @@ public class MainActivity extends Activity {
                 try {
                     FileWriter frameDataWriter = new FileWriter(frameData,true);
                     //计算起来每个视频的brightness矩阵,又把矩阵写在frameData.txt上
-                    for(int i = 2; i < 3; i++ ){//到现在已经做好了两个对象
+                    for(int i = 1; i < 52; i++ ){//到现在已经做好了两个对象
                         videoToSignalParser.parse(i,1);
                         videoToSignalParser.writeSignalToFile(frameDataWriter,i-1);
                         videoToSignalParser.parse(i,2);
