@@ -36,16 +36,15 @@ public class VideoToSignalParser {
         this.frameConv = new AndroidFrameConverter();
 
         //每个视频分成90帧的五个组.那么,每个视频亮度/帧的矩阵是个450的矩阵
-        brightness = new float[450];
+        brightness = new float[300];
 
         //采集过的心跳数据
-        heartBeatRate = new int[]{76,101,71,90,76,80,103,73,78,73,90,71,95,53,63,63,94,83,91,78,59,89,85,67,66,61,68,71,92,76,91,
-                                    71,61,74,69,67,107,67,79,87,71,106,85,65,76,90,99,78,71,62,76};
+        heartBeatRate = new int[]{71,70,69,82};
     }
 
     public void parse(int index, int subIndex){
         //每个样本的对...
-                FFmpegFrameGrabber grab = new FFmpegFrameGrabber(pathToVideo + baseFname + index + "-" + subIndex + ".mp4");
+                FFmpegFrameGrabber grab = new FFmpegFrameGrabber(pathToVideo + baseFname + index+".mp4");
 
                 try {
                     Bitmap img;

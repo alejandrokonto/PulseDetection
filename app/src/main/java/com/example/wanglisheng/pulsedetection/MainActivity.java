@@ -27,6 +27,8 @@ import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.bytedeco.javacpp.opencv_core;
+import org.bytedeco.javacpp.opencv_ml;
+import org.bytedeco.javacpp.opencv_stitching;
 import org.bytedeco.javacv.AndroidFrameConverter;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
@@ -34,21 +36,25 @@ import org.bytedeco.javacv.FrameGrabber;
 import org.w3c.dom.Text;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Calendar;
+import java.util.Vector;
 
 import static android.R.attr.button;
 import static android.R.attr.path;
 import static android.provider.MediaStore.ACTION_VIDEO_CAPTURE;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements Camera.PreviewCallback{
 
-    Button takePhotos;
+    Button takeAction;
     TextView resultsV;
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -58,56 +64,29 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        takePhotos = (Button) findViewById(R.id.btnTakePic);
-        //======================12.29.2016========================
-        //从这里开始我们应该做下面的步骤：
-        // 1.把电脑上存过的视频分成照片
-        // 2.从照片取得个信号
-        // 3.给信号应用滤波
 
-        takePhotos.setOnClickListener(new View.OnClickListener() {
+
+        takeAction = (Button) findViewById(R.id.btnTakePic);
+        resultsV = (TextView) findViewById(R.id.resultsView);
+
+
+
+
+        takeAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                resultsV = (TextView) findViewById(R.id.resultsView);
-                //============= 1.把电脑上存过的视频分成照片=================================================
                 String pathToVideo = "/storage/emulated/0/DCIM/Camera/";
                 String pathToWrite = "/storage/emulated/0/DCIM/PulseDetectionApp";
-                VideoToSignalParser videoToSignalParser = new VideoToSignalParser(pathToVideo,pathToWrite);
 
-                //创建所有数据的目录
-                File newDir = new File(pathToWrite);
-                if(!newDir.exists()){
-                    boolean success = newDir.mkdir();
-                }
+                /*EstimateNNOutput estimateNNOutput = new EstimateNNOutput(pathToWrite,"sampleSubData42.txt");
+                resultsV.setText(Float.toString(estimateNNOutput.estimateOutput()));*/
 
-                //创建frameData.txt
-                File frameData = new File(pathToWrite+"/frameData.txt");
-                try {
-                    FileWriter frameDataWriter = new FileWriter(frameData,true);
-                    //计算起来每个视频的brightness矩阵,又把矩阵写在frameData.txt上
-                    for(int i = 1; i < 52; i++ ){//到现在已经做好了两个对象
-                        videoToSignalParser.parse(i,1);
-                        videoToSignalParser.writeSignalToFile(frameDataWriter,i-1);
-                        videoToSignalParser.parse(i,2);
-                        videoToSignalParser.writeSignalToFile(frameDataWriter, i-1);
-                        resultsV.setText("写完了");
-                    }
-                    frameDataWriter.close();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
-
-
-
-
-                /*dispatchTakeVideoIntent();  That was for using an intent to use the camera of the phone*/
             }
         });
 
@@ -123,23 +102,12 @@ public class MainActivity extends Activity {
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
-    static final int REQUEST_VIDEO_CAPTURE = 1;
+    @Override
+    public void onPreviewFrame(byte[] bytes, Camera camera) {
 
-    private void dispatchTakeVideoIntent() {
-        Intent takeVideoIntent = new Intent(ACTION_VIDEO_CAPTURE);
-        if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
-        }
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {
-            Uri videoUri = intent.getData();
 
-            resultsV.setText("Data received!");
-
-        }
-    }
 
 
     /**
@@ -177,4 +145,6 @@ public class MainActivity extends Activity {
         AppIndex.AppIndexApi.end(client, getIndexApiAction());
         client.disconnect();
     }
+
+
 }
