@@ -4,28 +4,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.wanglisheng.pulsedetection.MainActivity">
+    tools:context="com.example.wanglisheng.pulsedetection.MainActivity"
+    android:layout_weight="1">
 
     <SurfaceView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/cameraView" />
+        android:id="@+id/cameraView"
+        android:layout_weight="0.9" />
 
-    <TextView
-        android:text="@string/resultsTextViewText"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:id="@+id/resultsView"
-        android:background="#ffffff"
-        android:textColor="#333333"
-        android:textSize="18sp"
-        android:layout_weight="1.00"
-        android:layout_height="0dp" />
-
-    <Button
-        android:text="@string/buttonText"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btnTakePic"
-        android:elevation="0dp" />
+        android:layout_weight="0.1"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp">
+
+        <Button
+            android:text="@string/buttonText"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/btnTakePic"
+            android:elevation="0dp"
+            android:layout_weight="1"
+            tools:textSize="18sp"
+            android:layout_marginRight="5dp" />
+
+        <TextView
+            android:text="@string/resultsTextViewText"
+            android:layout_width="wrap_content"
+            android:id="@+id/resultsView"
+            android:background="#ffffff"
+            android:textColor="#333333"
+            android:textSize="18sp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|center_horizontal" />
+
+    </LinearLayout>
 
 </LinearLayout>
