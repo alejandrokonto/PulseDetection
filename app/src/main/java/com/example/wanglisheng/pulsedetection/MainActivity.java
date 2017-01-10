@@ -18,6 +18,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +39,7 @@ import org.w3c.dom.Text;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -50,10 +52,13 @@ import static android.R.attr.button;
 import static android.R.attr.path;
 import static android.provider.MediaStore.ACTION_VIDEO_CAPTURE;
 
-public class MainActivity extends Activity implements Camera.PreviewCallback{
+public class MainActivity extends Activity{
 
     Button takeAction;
     TextView resultsV;
+    FrameLayout cameraV;
+    Camera cCamera;
+    CameraPreview cameraPreview;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -64,16 +69,21 @@ public class MainActivity extends Activity implements Camera.PreviewCallback{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-
-
-
-        super.onCreate(savedInstanceState);
+         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
 
         takeAction = (Button) findViewById(R.id.btnTakePic);
         resultsV = (TextView) findViewById(R.id.resultsView);
+        cameraV = (FrameLayout) findViewById(R.id.cameraV);
+
+        cCamera = Camera.open();
+
+
+        cameraPreview = new CameraPreview(this,cCamera);
+
+
+        cameraV.addView(cameraPreview);
+
 
 
 
@@ -102,10 +112,6 @@ public class MainActivity extends Activity implements Camera.PreviewCallback{
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
-    @Override
-    public void onPreviewFrame(byte[] bytes, Camera camera) {
-
-    }
 
 
 
@@ -139,12 +145,16 @@ public class MainActivity extends Activity implements Camera.PreviewCallback{
     @Override
     public void onStop() {
         super.onStop();
-
+        cCamera.setPreviewCallback(null);
+        cCamera.stopPreview();
+        cCamera.release();
+        cCamera = null;
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         AppIndex.AppIndexApi.end(client, getIndexApiAction());
         client.disconnect();
     }
+
 
 
 }

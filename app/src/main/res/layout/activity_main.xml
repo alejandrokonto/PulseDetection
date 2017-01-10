@@ -7,11 +7,15 @@
     tools:context="com.example.wanglisheng.pulsedetection.MainActivity"
     android:layout_weight="1">
 
-    <SurfaceView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/cameraView"
-        android:layout_weight="0.9" />
+        android:layout_weight="0.9"
+        android:id="@+id/cameraV"
+        android:background="#cccccc">
+
+
+    </FrameLayout>
 
     <LinearLayout
         android:orientation="horizontal"
