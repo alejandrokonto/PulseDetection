@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -59,7 +60,7 @@ public class MainActivity extends Activity{
     FrameLayout cameraV;
     Camera cCamera;
     CameraPreview cameraPreview;
-
+    int w, h;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -77,9 +78,10 @@ public class MainActivity extends Activity{
         cameraV = (FrameLayout) findViewById(R.id.cameraV);
 
         cCamera = Camera.open();
+        w = cCamera.getParameters().getPreviewSize().width;
+        h = cCamera.getParameters().getPreviewSize().height;
 
-
-        cameraPreview = new CameraPreview(this,cCamera);
+        cameraPreview = new CameraPreview(this,cCamera,resultsV);
 
 
         cameraV.addView(cameraPreview);
@@ -94,8 +96,15 @@ public class MainActivity extends Activity{
                 String pathToVideo = "/storage/emulated/0/DCIM/Camera/";
                 String pathToWrite = "/storage/emulated/0/DCIM/PulseDetectionApp";
 
-                /*EstimateNNOutput estimateNNOutput = new EstimateNNOutput(pathToWrite,"sampleSubData42.txt");
-                resultsV.setText(Float.toString(estimateNNOutput.estimateOutput()));*/
+
+                YUVtoBrightnessSignal yuVtoBrightnessSignal = new YUVtoBrightnessSignal(cameraPreview.dataToAnalyze,pathToWrite,w,h);
+                try {
+                    yuVtoBrightnessSignal.parse();
+                } catch (IOException e) {
+                    resultsV.setText("problhma me parsing");
+                }
+                EstimateNNOutput estimateNNOutput = new EstimateNNOutput(pathToWrite,"previewFrameData.txt");
+                resultsV.setText(Float.toString(estimateNNOutput.estimateOutput()));
 
             }
         });

@@ -5,6 +5,7 @@ package com.example.wanglisheng.pulsedetection;
  */
 
 import android.content.Context;
+import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -18,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Vector;
 
 
 import static android.hardware.Camera.Parameters.FLASH_MODE_TORCH;
@@ -26,14 +28,20 @@ import static android.hardware.Camera.Parameters.FLASH_MODE_TORCH;
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback{
     private SurfaceHolder mHolder;
     private Camera mCamera;
+    public Vector<byte[]> dataToAnalyze;
+    TextView textView;
 
-    public CameraPreview(Context context, Camera camera) {
+    public CameraPreview(Context context, Camera camera, TextView textView) {
         super(context);
 
-        Log.d("CameraPreviewTag", "i entered");
+        this.textView = textView;
+
+        dataToAnalyze = new Vector<>();
+
         camera.setDisplayOrientation(90);
         Camera.Parameters params = camera.getParameters();
         params.setFlashMode(FLASH_MODE_TORCH);
+        params.setPreviewFormat(ImageFormat.RGB_565);
         camera.setParameters(params);
         mCamera = camera;
 
@@ -108,20 +116,14 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void onPreviewFrame(byte[] bytes, Camera camera) {
-        Log.d("OnPreviewFrameTag", "onPreviewFrame - wrote bytes: lisheng chi wo de putsa "
-                + bytes.length);
-        /*FileOutputStream outStream = null;
-        try {
-            outStream = new FileOutputStream(String.format(
-                    "/storage/emulated/0/DCIM/PulseDetectionApp/dokimastiko.txt", System.currentTimeMillis()));
-            outStream.write(bytes);
-            outStream.close();
-            Log.d("OnPreviewFrameTag", "onPreviewFrame - wrote bytes: "
-                    + bytes.length);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
+
+        dataToAnalyze.add(bytes);
+        Log.d("OnPreviewFrameVector", "My data has:"+bytes.length+" bytes");
+
+        if (dataToAnalyze.size() == 100) {
+            textView.setText("It's Time!");
+            mCamera.setPreviewCallback(null);
+        }
+
     }
 }
